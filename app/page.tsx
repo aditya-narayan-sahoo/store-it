@@ -1,4 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 export default function Home() {
   return (
     <div className="flex-center h-screen">
