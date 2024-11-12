@@ -1,9 +1,9 @@
-import MobileNavigation from "@/components/MobileNavigation";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
 import { ReactNode } from "react";
-import { getCurrentUser } from "@/lib/actions/user.action";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/actions/user.action";
+import MobileNavigation from "@/components/MobileNavigation";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const currentUser = await getCurrentUser();
@@ -12,7 +12,7 @@ const Layout = async ({ children }: { children: ReactNode }) => {
     <main className="flex h-screen">
       <Sidebar {...currentUser} />
       <section className="flex h-full flex-1 flex-col">
-        <MobileNavigation />
+        <MobileNavigation {...currentUser} />
         <Header />
         <div className="main-content">{children}</div>
       </section>

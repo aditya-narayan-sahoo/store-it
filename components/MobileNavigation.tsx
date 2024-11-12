@@ -4,6 +4,7 @@
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -113,6 +114,7 @@ const MobileNavigation = ({
               <p>Logout</p>
             </Button>
           </div>
+          <SheetDescription>{""}</SheetDescription>
         </SheetContent>
       </Sheet>
     </header>
