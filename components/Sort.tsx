@@ -14,6 +14,7 @@ const Sort = () => {
   const path = usePathname();
   const router = useRouter();
   const handleSort = (value: string) => {
+    console.log("Sorting by:", value);
     router.push(`${path}?sort=${value}`);
   };
 
