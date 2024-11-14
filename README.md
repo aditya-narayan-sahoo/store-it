@@ -64,7 +64,7 @@ reusability
 ![documents-page](/public/screenshots/documents-page.png)
 
 ### Screenshots For Small Screens :
-![mobile-homepage](/public/screenshots/mobile-dashboard.png)
+![mobile-homepage](/public/screenshots/mobile-homepage.png)
 ![mobile-dashboard](/public/screenshots/mobile-dashboard.png)
 ![mobile-navigation](/public/screenshots/mobile-navigation.png)
 
