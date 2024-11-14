@@ -20,8 +20,10 @@ export const uploadFile = async ({
   path,
 }: UploadFileProps) => {
   const { storage, database } = await createAdminClient();
+
   try {
     const inputFile = InputFile.fromBuffer(file, file.name);
+
     const bucketFile = await storage.createFile(
       appwriteConfig.bucketId,
       ID.unique(),
@@ -72,11 +74,14 @@ const createQueries = (
       Query.contains("users", [currentUser.email]),
     ]),
   ];
+
   if (types.length > 0) queries.push(Query.equal("type", types));
   if (searchText) queries.push(Query.contains("name", searchText));
   if (limit) queries.push(Query.limit(limit));
+
   if (sort) {
     const [sortBy, orderBy] = sort.split("-");
+
     queries.push(
       orderBy === "asc" ? Query.orderAsc(sortBy) : Query.orderDesc(sortBy)
     );
@@ -95,8 +100,11 @@ export const getFiles = async ({
 
   try {
     const currentUser = await getCurrentUser();
+
     if (!currentUser) throw new Error("User not found");
+
     const queries = createQueries(currentUser, types, searchText, sort, limit);
+
     const files = await database.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
@@ -115,14 +123,18 @@ export const renameFile = async ({
   path,
 }: RenameFileProps) => {
   const { database } = await createAdminClient();
+
   try {
     const newName = `${name}.${extension}`;
     const updatedFile = await database.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       fileId,
-      { name: newName }
+      {
+        name: newName,
+      }
     );
+
     revalidatePath(path);
     return parseStringify(updatedFile);
   } catch (error) {
@@ -136,13 +148,17 @@ export const updateFileUsers = async ({
   path,
 }: UpdateFileUsersProps) => {
   const { database } = await createAdminClient();
+
   try {
     const updatedFile = await database.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       fileId,
-      { users: emails }
+      {
+        users: emails,
+      }
     );
+
     revalidatePath(path);
     return parseStringify(updatedFile);
   } catch (error) {
@@ -156,15 +172,18 @@ export const deleteFile = async ({
   path,
 }: DeleteFileProps) => {
   const { database, storage } = await createAdminClient();
+
   try {
     const deletedFile = await database.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       fileId
     );
+
     if (deletedFile) {
       await storage.deleteFile(appwriteConfig.bucketId, bucketFileId);
     }
+
     revalidatePath(path);
     return parseStringify({ status: "success" });
   } catch (error) {
@@ -172,6 +191,7 @@ export const deleteFile = async ({
   }
 };
 
+// ============================== TOTAL FILE SPACE USED
 export async function getTotalSpaceUsed() {
   try {
     const { database } = await createSessionClient();

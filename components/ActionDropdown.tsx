@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogContent,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Input } from "./ui/input";
@@ -123,6 +124,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             </Button>
           </DialogFooter>
         )}
+        <DialogDescription>{""}</DialogDescription>
       </DialogContent>
     );
   };

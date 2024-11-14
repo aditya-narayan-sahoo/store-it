@@ -10,11 +10,13 @@ import { createAdminClient, createSessionClient } from "../appwrite";
 
 const getUserByEmail = async (email: string) => {
   const { database } = await createAdminClient();
+
   const result = await database.listDocuments(
     appwriteConfig.databaseId,
     appwriteConfig.usersCollectionId,
     [Query.equal("email", [email])]
   );
+
   return result.total > 0 ? result.documents[0] : null;
 };
 
@@ -28,6 +30,7 @@ export const sendEmailOTP = async ({ email }: { email: string }) => {
 
   try {
     const session = await account.createEmailToken(ID.unique(), email);
+
     return session.userId;
   } catch (error) {
     handleError(error, "Failed to send email OTP");
@@ -42,17 +45,26 @@ export const createAccount = async ({
   email: string;
 }) => {
   const existingUser = await getUserByEmail(email);
+
   const accountId = await sendEmailOTP({ email });
   if (!accountId) throw new Error("Failed to send an OTP");
+
   if (!existingUser) {
     const { database } = await createAdminClient();
+
     await database.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
-      { fullName, email, avatar: avatarPlaceholderUrl, accountId }
+      {
+        fullName,
+        email,
+        avatar: avatarPlaceholderUrl,
+        accountId,
+      }
     );
   }
+
   return parseStringify({ accountId });
 };
 
@@ -65,13 +77,16 @@ export const verifySecret = async ({
 }) => {
   try {
     const { account } = await createAdminClient();
+
     const session = await account.createSession(accountId, password);
+
     (await cookies()).set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
       secure: true,
     });
+
     return parseStringify({ sessionId: session.$id });
   } catch (error) {
     handleError(error, "Failed to verify OTP");
@@ -81,13 +96,17 @@ export const verifySecret = async ({
 export const getCurrentUser = async () => {
   try {
     const { database, account } = await createSessionClient();
+
     const result = await account.get();
+
     const user = await database.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       [Query.equal("accountId", result.$id)]
     );
+
     if (user.total <= 0) return null;
+
     return parseStringify(user.documents[0]);
   } catch (error) {
     console.log(error);
@@ -110,11 +129,13 @@ export const signOutUser = async () => {
 export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);
-    // If the user exists,we send OTP
+
+    // User exists, send OTP
     if (existingUser) {
       await sendEmailOTP({ email });
       return parseStringify({ accountId: existingUser.accountId });
     }
+
     return parseStringify({ accountId: null, error: "User not found" });
   } catch (error) {
     handleError(error, "Failed to sign in user");

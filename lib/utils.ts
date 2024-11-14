@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
 export const parseStringify = (value: unknown) =>
   JSON.parse(JSON.stringify(value));
 
@@ -25,9 +24,17 @@ export const convertFileSize = (sizeInBytes: number, digits?: number) => {
   }
 };
 
+export const calculatePercentage = (sizeInBytes: number) => {
+  const totalSizeInBytes = 2 * 1024 * 1024 * 1024; // 2GB in bytes
+  const percentage = (sizeInBytes / totalSizeInBytes) * 100;
+  return Number(percentage.toFixed(2));
+};
+
 export const getFileType = (fileName: string) => {
   const extension = fileName.split(".").pop()?.toLowerCase();
+
   if (!extension) return { type: "other", extension: "" };
+
   const documentExtensions = [
     "pdf",
     "doc",
@@ -66,6 +73,41 @@ export const getFileType = (fileName: string) => {
   if (audioExtensions.includes(extension)) return { type: "audio", extension };
 
   return { type: "other", extension };
+};
+
+export const formatDateTime = (isoString: string | null | undefined) => {
+  if (!isoString) return "—";
+
+  const date = new Date(isoString);
+
+  // Get hours and adjust for 12-hour format
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? "pm" : "am";
+
+  // Convert hours to 12-hour format
+  hours = hours % 12 || 12;
+
+  // Format the time and date parts
+  const time = `${hours}:${minutes.toString().padStart(2, "0")}${period}`;
+  const day = date.getDate();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[date.getMonth()];
+
+  return `${time}, ${day} ${month}`;
 };
 
 export const getFileIcon = (
@@ -130,67 +172,17 @@ export const getFileIcon = (
   }
 };
 
+// APPWRITE URL UTILS
+// Construct appwrite file URL - https://appwrite.io/docs/apis/rest#images
 export const constructFileUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
-};
-
-export const getFileTypesParams = (type: string) => {
-  switch (type) {
-    case "documents":
-      return ["document"];
-    case "images":
-      return ["image"];
-    case "media":
-      return ["video", "audio"];
-    case "others":
-      return ["other"];
-    default:
-      return ["document"];
-  }
-};
-
-export const formatDateTime = (isoString: string | null | undefined) => {
-  if (!isoString) return "—";
-  const date = new Date(isoString);
-  // Get hours and adjust for 12-hour format
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const period = hours >= 12 ? "pm" : "am";
-  // Convert hours to 12-hour format
-  hours = hours % 12 || 12;
-  // Format the time and date parts
-  const time = `${hours}:${minutes.toString().padStart(2, "0")}${period}`;
-  const day = date.getDate();
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const month = monthNames[date.getMonth()];
-
-  return `${time}, ${day} ${month}`;
 };
 
 export const constructDownloadUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/download?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
 
-export const calculatePercentage = (sizeInBytes: number) => {
-  const totalSizeInBytes = 2 * 1024 * 1024 * 1024; // 2GB in bytes
-  const percentage = (sizeInBytes / totalSizeInBytes) * 100;
-  return Number(percentage.toFixed(2));
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// DASHBOARD UTILS
 export const getUsageSummary = (totalSpace: any) => {
   return [
     {
@@ -225,4 +217,19 @@ export const getUsageSummary = (totalSpace: any) => {
       url: "/others",
     },
   ];
+};
+
+export const getFileTypesParams = (type: string) => {
+  switch (type) {
+    case "documents":
+      return ["document"];
+    case "images":
+      return ["image"];
+    case "media":
+      return ["video", "audio"];
+    case "others":
+      return ["other"];
+    default:
+      return ["document"];
+  }
 };

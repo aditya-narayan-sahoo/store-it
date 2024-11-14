@@ -1,5 +1,4 @@
 import Card from "@/components/Card";
-import Sort from "@/components/Sort";
 import { Models } from "node-appwrite";
 import { getFiles } from "@/lib/actions/file.actions";
 import { convertFileSize, getFileTypesParams } from "@/lib/utils";
@@ -24,8 +23,8 @@ const Page = async ({ searchParams, params }: SearchParamProps) => {
             Total: <span className="h5">{convertFileSize(totalSizeBytes)}</span>
           </p>
           <div className="sort-container">
-            <p className="body-1 hidden text-light-200 sm:block">Sort by:</p>
-            <Sort />
+            {/* <p className="body-1 hidden text-light-200 sm:block">Sort by:</p> */}
+            {/* <Sort /> */}
           </div>
         </div>
       </section>
